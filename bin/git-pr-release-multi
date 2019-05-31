@@ -262,6 +262,10 @@ def pull_request_files(client, pull_request)
 end
 
 def main
+  p ARGV[0]
+  return
+
+
   host, repository, scheme = host_and_repository_and_scheme
 
   if host
@@ -287,9 +291,13 @@ def main
   end.parse!
 
   ### Set up configuration
-
-  production_branch = ENV.fetch('GIT_PR_RELEASE_BRANCH_PRODUCTION') { git_config('branch.production') } || 'master'
-  staging_branch    = ENV.fetch('GIT_PR_RELEASE_BRANCH_STAGING') { git_config('branch.staging') }       || 'staging'
+  if ARGV[0].empty?
+    production_branch = ENV.fetch('GIT_PR_RELEASE_BRANCH_PRODUCTION') { git_config('branch.production') } || 'master'
+    staging_branch    = ENV.fetch('GIT_PR_RELEASE_BRANCH_STAGING') { git_config('branch.staging') }       || 'staging'
+  else
+    production_branch = ENV.fetch('GIT_PR_RELEASE_BRANCH_PRODUCTION') { git_config("#{ARGV[0]}.production") } || 'master'
+    staging_branch    = ENV.fetch('GIT_PR_RELEASE_BRANCH_STAGING') { git_config("#{ARGV[0]}.staging") }       || 'staging'
+  end
 
   say "Repository:        #{repository}", :debug
   say "Production branch: #{production_branch}", :debug
@@ -409,4 +417,4 @@ def main
   dump_result_as_json( release_pr, merged_prs, changed_files ) if @json
 end
 
-main if $0 == __FILE__ || $0 == File.join(Gem.dir, "bin", "git-pr-release")
+main if $0 == __FILE__
