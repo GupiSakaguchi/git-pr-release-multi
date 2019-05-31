@@ -262,10 +262,6 @@ def pull_request_files(client, pull_request)
 end
 
 def main
-  p ARGV[0]
-  return
-
-
   host, repository, scheme = host_and_repository_and_scheme
 
   if host
